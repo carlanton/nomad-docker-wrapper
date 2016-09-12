@@ -14,6 +14,7 @@ import (
 	"os"
 	"regexp"
 	"sync"
+	"syscall"
 )
 
 const (
@@ -152,13 +153,32 @@ func pipe(dst, src net.Conn, wg *sync.WaitGroup) {
 }
 
 func main() {
+	dockerSocketInfo, err := os.Stat(DOCKER_SOCKET)
+	if err != nil {
+		log.Fatalf("Could not stat Docker socket: %s")
+	}
+	dockerSocketStat, ok := dockerSocketInfo.Sys().(*syscall.Stat_t)
+	if !ok {
+		log.Fatalf("Type assertion failed! Unsupported OS?")
+	}
+
 	if err := os.Remove(WRAPPER_SOCKET); err != nil && !os.IsNotExist(err) {
 		log.Fatalf("Error removing existing unix socket: %s", err)
 	}
 
 	l, err := net.Listen("unix", WRAPPER_SOCKET)
 	if err != nil {
-		log.Fatalf("Listen error:", err)
+		log.Fatalf("Listen error: %s", err)
+	}
+
+	// Use the same mode, uid and gid for the wrapper socket
+	if err := os.Chmod(WRAPPER_SOCKET, dockerSocketInfo.Mode()); err != nil {
+		log.Fatalf("Could't chmod wrapper socket: %s", err)
+	}
+	uid := int(dockerSocketStat.Uid)
+	gid := int(dockerSocketStat.Gid)
+	if err := os.Chown(WRAPPER_SOCKET, uid, gid); err != nil {
+		log.Fatalf("Couldn't chown wrapper socket: %s", err)
 	}
 
 	server := &http.Server{
