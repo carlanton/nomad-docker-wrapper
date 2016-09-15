@@ -3,7 +3,7 @@
 This is a hack to allow Docker bind mounts in Nomad. Inspired by how
 [Weave](https://www.weave.works/) interacts with the Docker daemon by wrapping
 the Docker socket and augment certain API calls with extra network
-configuration, this tool allow us to specify Docker bind mounts as environment
+configuration, this tool allows us to specify Docker bind mounts as environment
 variables.
 
 ## Requirements
@@ -53,4 +53,4 @@ env = {
 You can configure nomad-docker-wrapper with the following environment variables:
 
  * `DOCKER_HOST`: Location of the Docker unix socket (defaults to `unix:///var/run/docker.sock`)
- * `WRAPPER_SOCKET`: Location of the wrapper socket (defaults to `/tmp/nomad-docker-wrapper.sock`
+ * `WRAPPER_SOCKET`: Location of the wrapper socket (defaults to `/tmp/nomad-docker-wrapper.sock`)
