@@ -8,7 +8,7 @@ variables.
 
 ## Requirements
 
- * The Docker socket must listen on unix:///var/run/docker.sock
+ * The Docker socket must listen on a unix socket
 
 ## Building
 
@@ -48,4 +48,9 @@ env = {
 	DOCKER_BIND_MOUNT_3 = "/you/get/the/point:/meh:rw"
 }
 ```
+## Configuration
 
+You can configure nomad-docker-wrapper with the following environment variables:
+
+ * `DOCKER_HOST`: Location of the Docker unix socket (defaults to `unix:///var/run/docker.sock`)
+ * `WRAPPER_SOCKET`: Location of the wrapper socket (defaults to `/tmp/nomad-docker-wrapper.sock`
